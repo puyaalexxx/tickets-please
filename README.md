@@ -14,3 +14,5 @@
 - Database seeding
 - Model Relationships
 - Api Endpoints
+- Api Versioning
+- Sanctum for Token Authentication

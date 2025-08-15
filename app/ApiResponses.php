@@ -8,16 +8,29 @@ use Illuminate\Http\JsonResponse;
 
 trait ApiResponses
 {
-    protected function success($message, $status = 200): JsonResponse
+    protected function success($message, $data, $statusCode = 200): JsonResponse
+    {
+        return response()->json([
+            'data' => $data,
+            'message' => $message,
+            'status' => $statusCode,
+        ], $statusCode);
+    }
+
+    protected function ok($message, $data, $statusCode = 200): JsonResponse
+    {
+        return response()->json([
+            'data' => $data,
+            'message' => $message,
+            'status' => $statusCode,
+        ], $statusCode);
+    }
+
+    protected function error($message, $statusCode): JsonResponse
     {
         return response()->json([
             'message' => $message,
-            'status' => $status,
-        ], $status);
-    }
-
-    protected function ok($message): JsonResponse
-    {
-        return $this->success($message, 200);
+            'status' => $statusCode,
+        ], $statusCode);
     }
 }
