@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\ApiResponses;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginUserRequest;
-use App\Http\Requests\ApiLoginRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class AuthController extends Controller
 {
@@ -18,7 +19,7 @@ class AuthController extends Controller
     {
         $request->validated($request->all());
 
-        if(!Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($request->only('email', 'password'))) {
             $this->error('Invalid credentials', 401);
         }
 
@@ -28,12 +29,22 @@ class AuthController extends Controller
             'Authenticated',
             [
                 'user' => $user,
-                'token' => $user->createToken('Api token for ' . $user->email)->plainTextToken,
+                'token' => $user->createToken('Api token for ' . $user->email,
+                    ['*'],
+                    now()->addMonth())
+                    ->plainTextToken,
             ]
         );
     }
 
-    public function register() : JsonResponse
+    public function logout(Request $request): JsonResponse
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return $this->ok('Logged out successfully');
+    }
+
+    public function register(): JsonResponse
     {
         return $this->ok(
             'Registration successful',

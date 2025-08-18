@@ -5,6 +5,9 @@ namespace App\Http\Requests\Api;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @property mixed $email
+ */
 class LoginUserRequest extends FormRequest
 {
     /**

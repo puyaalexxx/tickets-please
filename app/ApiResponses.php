@@ -17,7 +17,7 @@ trait ApiResponses
         ], $statusCode);
     }
 
-    protected function ok($message, $data, $statusCode = 200): JsonResponse
+    protected function ok($message, $data = [], $statusCode = 200): JsonResponse
     {
         return response()->json([
             'data' => $data,
