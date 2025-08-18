@@ -29,6 +29,15 @@ class UserResource extends JsonResource
                     ]
                 ),
             ],
+            'includes' => [
+                'tickets' => TicketResource::collection($this->whenLoaded('tickets')),
+            ],
+            'links' => [
+                'self' => route('users.show', ['user' => $this->id]),
+            ],
+            /*'relationships' => [
+                'tickets' => TicketResource::collection($this->whenLoaded('tickets')),
+            ],*/
         ];
     }
 }
