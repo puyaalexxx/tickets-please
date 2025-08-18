@@ -15,7 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class TicketResource extends JsonResource
 {
-    // Uncomment the following line if you want to wrap the resource in toickets instead of data
+    // Uncomment the following line if you want to wrap the resource in tickets instead of data
     // public static $wrap = 'ticket';
 
     /**
@@ -31,6 +31,9 @@ class TicketResource extends JsonResource
             'attributes' => [
                 'title' => $this->title,
                 'description' => $this->description,
+                /*'description' => $this->when($request->routeIs('tickets.show'), function () {
+                    return $this->description;
+                }),*/
                 'status' => $this->status,
                 'created_at' => $this->created_at?->toIso8601String(),
                 'updated_at' => $this->updated_at?->toIso8601String(),
@@ -47,6 +50,9 @@ class TicketResource extends JsonResource
                     ]
                 ]
                 // }),
+            ],
+            'includes' => [
+                'author' => new UserResource($this->whenLoaded('user')),
             ],
             'links' => [
                 'self' => route('tickets.show', $this->id),
