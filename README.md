@@ -16,3 +16,8 @@
 - Api Endpoints
 - Api Versioning
 - Sanctum for Token Authentication
+- Api Resources for formatted responses
+- Custom Requests
+- Validation
+- Filtering (tickets)
+- Custom Query Builder
