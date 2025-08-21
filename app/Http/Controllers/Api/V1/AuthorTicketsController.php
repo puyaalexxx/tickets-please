@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Filters\V1\TicketFilter;
+use App\Http\Requests\Api\V1\ReplaceTicketRequest;
 use App\Http\Requests\Api\V1\StoreTicketRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
@@ -30,6 +31,39 @@ class AuthorTicketsController extends ApiController
         ];
 
         return new TicketResource(Ticket::create($model));
+    }
+
+    public function replace(ReplaceTicketRequest $request, int $author_id, int $ticket_id): TicketResource|JsonResponse
+    {
+        //PUT method to replace the ticket
+
+        try {
+            $ticket = Ticket::findOrFail($ticket_id);
+            
+            //we need to check id the author id matches the user_id of the ticket
+            if ($ticket->user_id === $author_id) {
+
+                $model = [
+                    'title' => $request->input('data.attributes.title'),
+                    'description' => $request->input('data.attributes.description'),
+                    'status' => $request->input('data.attributes.status'),
+                    'user_id' => $author_id,
+                ];
+
+                $ticket->update($model);
+
+                return new TicketResource($ticket);
+            }
+
+            return $this->error('Ticket author ID does not match the provided author ID', [
+                'error' => 'The specified ticket author ID does not match the provided author ID.'
+            ], 404);
+
+        } catch (ModelNotFoundException $exception) {
+            return $this->error('Ticket not found', [
+                'error' => 'The specified ticket id does not exist.'
+            ], 404);
+        }
     }
 
     /**
