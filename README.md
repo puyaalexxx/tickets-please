@@ -16,9 +16,13 @@
 - Api Endpoints
 - Api Versioning
 - Sanctum for Token Authentication
+- Authentication
+- Authorization
+- Authorization Policies
 - Api Resources for formatted responses
 - Custom Requests
 - Validation
 - Filtering (tickets)
 - Custom Query Builder
 - Sorting (tickets, authors)
+- Crud Operations (tickets, authors) - GET, POST, PUT, PATCH, DELETE
