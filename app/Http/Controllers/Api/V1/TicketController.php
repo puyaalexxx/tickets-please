@@ -9,6 +9,7 @@ use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TicketController extends ApiController
@@ -30,7 +31,7 @@ class TicketController extends ApiController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTicketRequest $request)
+    public function store(StoreTicketRequest $request): TicketResource|JsonResponse
     {
         try {
             $user = User::findOrFail($request->input('data.relationships.author.data.id'));
@@ -53,13 +54,22 @@ class TicketController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(Ticket $ticket): TicketResource
+    public function show(int $ticket_id): TicketResource|JsonResponse
     {
-        if ($this->include('author')) {
-            return new TicketResource($ticket->load('user'));
-        }
+        try {
+            $ticket = Ticket::findOrFail($ticket_id);
 
-        return new TicketResource($ticket);
+            if ($this->include('author')) {
+                return new TicketResource($ticket->load('user'));
+            }
+
+            return new TicketResource($ticket);
+        } catch (ModelNotFoundException $exception) {
+
+            return $this->error('Ticket not found', [
+                'error' => 'The specified ticket id does not exist.'
+            ], 404);
+        }
     }
 
     /**
@@ -73,8 +83,18 @@ class TicketController extends ApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Ticket $ticket)
+    public function destroy(int $ticket_id): JsonResponse
     {
-        //
+        try {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $ticket->delete();
+
+            return $this->ok('Ticket deleted successfully.', $ticket);
+        } catch (ModelNotFoundException $exception) {
+
+            return $this->error('Ticket not found', [
+                'error' => 'The specified ticket id does not exist.'
+            ], 404);
+        }
     }
 }
