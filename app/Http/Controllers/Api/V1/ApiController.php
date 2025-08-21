@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\ApiResponses;
 use App\Http\Controllers\Controller;
 
 class ApiController extends Controller
 {
+    use ApiResponses;
+
     /**
      * Determine if the request should include the author relationship.
      */
