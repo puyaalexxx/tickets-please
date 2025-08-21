@@ -13,6 +13,18 @@ use Illuminate\Database\Eloquent\Builder;
 class TicketFilter extends QueryFilter
 {
     /**
+     * The attributes that can be sorted.
+     *
+     * @var array<string, string>
+     */
+    protected array $sortable = [
+        'title',
+        'status',
+        'createdAt' => 'created_at',
+        'updatedAt' => 'updated_at',
+    ];
+
+    /**
      * Filter tickets by created at dates
      *
      * @param string $value

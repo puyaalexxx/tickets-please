@@ -11,6 +11,7 @@ abstract class QueryFilter
 {
     protected Builder $builder;
     protected Request $request;
+    protected array $sortable = [];
 
     public function __construct(Request $request)
     {
@@ -39,5 +40,29 @@ abstract class QueryFilter
         }
 
         return $builder;
+    }
+
+    protected function sort(string $value): void
+    {
+        $sortAttributes = explode(',', $value);
+
+        foreach ($sortAttributes as $attribute) {
+            $direction = 'asc';
+
+            if (str_starts_with($attribute, '-')) {
+                $direction = 'desc';
+
+                $attribute = substr($attribute, 1);
+            }
+
+            //check if the field is sortable
+            if (!in_array($attribute, $this->sortable) && !array_key_exists($attribute, $this->sortable)) {
+                continue;
+            }
+            
+            $columnName = $this->sortable[$attribute] ?? $attribute;
+
+            $this->builder->orderBy($columnName, $direction);
+        }
     }
 }
