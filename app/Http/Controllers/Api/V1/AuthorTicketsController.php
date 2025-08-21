@@ -24,6 +24,9 @@ class AuthorTicketsController extends ApiController
      */
     public function store($author_id, StoreTicketRequest $request)
     {
+        //policy
+        $this->isAble('store', null);
+
         $model = [
             'title' => $request->input('data.attributes.title'),
             'description' => $request->input('data.attributes.description'),
@@ -43,6 +46,9 @@ class AuthorTicketsController extends ApiController
 
         try {
             $ticket = Ticket::findOrFail($ticket_id);
+
+            //policy
+            $this->isAble('update', $ticket);
 
             //we need to check id the author id matches the user_id of the ticket
             if ($ticket->user_id === $author_id) {
@@ -70,6 +76,9 @@ class AuthorTicketsController extends ApiController
         try {
             $ticket = Ticket::findOrFail($ticket_id);
 
+            //policy
+            $this->isAble('replace', $ticket);
+
             //we need to check id the author id matches the user_id of the ticket
             if ($ticket->user_id === $author_id) {
 
@@ -96,6 +105,9 @@ class AuthorTicketsController extends ApiController
     {
         try {
             $ticket = Ticket::findOrFail($ticket_id);
+
+            //policy
+            $this->isAble('delete', $ticket);
 
             //we need to check id the author id matches the user_id of the ticket
             if ($ticket->user_id === $author_id) {
