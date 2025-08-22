@@ -15,11 +15,12 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'type' => 'author',
+            'type' => 'user',
             'id' => $this->id,
             'attributes' => [
                 'name' => $this->name,
                 'email' => $this->email,
+                'is_manager' => $this->is_manager,
                 $this->mergeWhen(
                     $request->routeIs('authors.*'),
                     [

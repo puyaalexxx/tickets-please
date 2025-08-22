@@ -41,7 +41,7 @@ class TicketPolicy
     /*
      * Replace policy for the Ticket model.
      */
-    public function replace(User $user, Ticket $ticket): bool
+    public function replace(User $user): bool
     {
         return $user->tokenCan(Abilities::ReplaceTicket);
     }

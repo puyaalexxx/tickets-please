@@ -24,8 +24,6 @@ class BaseTicketRequest extends FormRequest
             }
         }
 
-        dd($attributesToUpdate);
-
         return $attributesToUpdate;
     }
 
