@@ -22,23 +22,35 @@ class StoreTicketRequest extends BaseTicketRequest
      */
     public function rules(): array
     {
+        $authorIdAttribute = $this->routeIs('tickets.store') ? 'data.relationships.author.data.id' : 'author';
+
         $rules = [
             'data.attributes.title' => 'required|string',
             'data.attributes.description' => 'required|string',
             'data.attributes.status' => 'required|string|in:A,C,H,X',
-            'data.relationships.author.data.id' => 'required|integer|exists:users,id'
+            $authorIdAttribute => 'required|integer|exists:users,id'
         ];
 
+        //get current logged-in user (store method don't need the author id from url)
         $user = $this->user();
-
-        // If the request is for storing a new ticket, ensure the author ID is provided
-        // This is only necessary when creating a new ticket from the specific author id route
-        if ($this->routeIs('tickets.store')) {
-            if ($user->tokenCan(Abilities::CreateOwnTicket)) {
-                $rules['data.relationships.author.data.id'] .= '|size:' . $user->id;
-            }
+        if ($user->tokenCan(Abilities::CreateOwnTicket)) {
+            $rules[$authorIdAttribute] .= '|size:' . $user->id;
         }
 
         return $rules;
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        // If the request is for storing a new ticket, ensure the author ID is provided
+        // This is only necessary when creating a new ticket from the specific author id route
+        if ($this->routeIs('authors.tickets.store')) {
+            $this->merge([
+                'author' => $this->route('author')
+            ]);
+        }
     }
 }
