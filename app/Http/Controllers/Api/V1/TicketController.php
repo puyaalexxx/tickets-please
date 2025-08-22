@@ -9,7 +9,6 @@ use App\Http\Requests\Api\V1\UpdateTicketRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use App\Policies\V1\TicketPolicy;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -37,15 +36,12 @@ class TicketController extends ApiController
      */
     public function store(StoreTicketRequest $request): TicketResource|JsonResponse
     {
-        try {
-            //policy
-            $this->isAble('store', Ticket::class);
-
+        //policy
+        if ($this->isAble('store', Ticket::class)) {
             return new TicketResource(Ticket::create($request->mappedAttributes()));
-
-        } catch (AuthorizationException $exception) {
-            return $this->error('You are not authorized to create the ticket', [], 401);
         }
+
+        $this->error('You are not authorized to create the ticket', [], 401);
     }
 
     /**
@@ -80,18 +76,18 @@ class TicketController extends ApiController
             $ticket = Ticket::findOrFail($ticket_id);
 
             //policy
-            $this->isAble('update', $ticket);
+            if ($this->isAble('update', $ticket)) {
+                $ticket->update($request->mappedAttributes());
 
-            $ticket->update($request->mappedAttributes());
+                return new TicketResource($ticket);
+            }
 
-            return new TicketResource($ticket);
+            return $this->error('You are not authorized to update the ticket', [], 401);
 
         } catch (ModelNotFoundException $exception) {
             return $this->error('Ticket not found', [
                 'error' => 'The specified ticket id does not exist.'
             ], 404);
-        } catch (AuthorizationException $exception) {
-            return $this->error('You are not authorized to update the ticket', [], 401);
         }
     }
 
@@ -103,11 +99,14 @@ class TicketController extends ApiController
             $ticket = Ticket::findOrFail($ticket_id);
 
             //policy
-            $this->isAble('replace', $ticket);
+            if ($this->isAble('replace', $ticket)) {
 
-            $ticket->update($request->mappedAttributes());
+                $ticket->update($request->mappedAttributes());
 
-            return new TicketResource($ticket);
+                return new TicketResource($ticket);
+            }
+
+            return $this->error('You are not authorized to update the ticket', [], 401);
 
         } catch (ModelNotFoundException $exception) {
             return $this->error('Ticket not found', [
@@ -125,11 +124,14 @@ class TicketController extends ApiController
             $ticket = Ticket::findOrFail($ticket_id);
 
             //policy
-            $this->isAble('delete', $ticket);
+            if ($this->isAble('delete', $ticket)) {
+                $ticket->delete();
 
-            $ticket->delete();
+                return $this->ok('Ticket deleted successfully.', $ticket);
+            }
 
-            return $this->ok('Ticket deleted successfully.', $ticket);
+            return $this->error('You are not authorized to delete the ticket', [], 401);
+
         } catch (ModelNotFoundException $exception) {
 
             return $this->error('Ticket not found', [

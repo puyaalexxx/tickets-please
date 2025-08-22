@@ -26,17 +26,12 @@ class UpdateTicketRequest extends BaseTicketRequest
             'data.attributes.title' => 'sometimes|string',
             'data.attributes.description' => 'sometimes|string',
             'data.attributes.status' => 'sometimes|string|in:A,C,H,X',
+            'data.relationships.author.data.id' => 'prohibited'
         ];
 
-        // If the request is for storing a new ticket, ensure the author ID is provided
-        // This is only necessary when creating a new ticket from the specific author id route
-        if ($this->routeIs('tickets.store')) {
+        //providing granular permissions to update the ticket
+        if ($this->user()->tokenCan(Abilities::UpdateTicket)) {
             $rules['data.relationships.author.data.id'] = 'sometimes|integer';
-        }
-
-        //providing granular permissions to update the author of the ticket
-        if ($this->user()->tokenCan(Abilities::UpdateOwnTicket)) {
-            $rules['data.relationships.author.data.id'] = 'prohibited';
         }
 
         return $rules;

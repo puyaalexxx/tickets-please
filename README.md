@@ -26,4 +26,4 @@
 - Filtering (tickets)
 - Custom Query Builder
 - Sorting (tickets, authors)
-- Crud Operations (tickets, authors) - GET, POST, PUT, PATCH, DELETE
+- CRUD Operations (tickets, authors) - GET, POST, PUT, PATCH, DELETE
