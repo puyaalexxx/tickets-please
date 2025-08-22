@@ -19,6 +19,7 @@
 - Authentication
 - Authorization
 - Authorization Policies
+- Authorization Abilities (via token abilities)
 - Api Resources for formatted responses
 - Custom Requests
 - Validation

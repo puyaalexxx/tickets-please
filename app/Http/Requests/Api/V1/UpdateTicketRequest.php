@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Permissions\Abilities;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class UpdateTicketRequest extends BaseTicketRequest
@@ -31,6 +32,11 @@ class UpdateTicketRequest extends BaseTicketRequest
         // This is only necessary when creating a new ticket from the specific author id route
         if ($this->routeIs('tickets.store')) {
             $rules['data.relationships.author.data.id'] = 'sometimes|integer';
+        }
+
+        //providing granular permissions to update the author of the ticket
+        if ($this->user()->tokenCan(Abilities::UpdateOwnTicket)) {
+            $rules['data.relationships.author.data.id'] = 'prohibited';
         }
 
         return $rules;

@@ -8,7 +8,6 @@ use App\Http\Requests\Api\V1\StoreTicketRequest;
 use App\Http\Requests\Api\V1\UpdateTicketRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
-use App\Models\User;
 use App\Policies\V1\TicketPolicy;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -39,20 +38,14 @@ class TicketController extends ApiController
     public function store(StoreTicketRequest $request): TicketResource|JsonResponse
     {
         try {
-            $user = User::findOrFail($request->input('data.relationships.author.data.id'));
-
             //policy
-            $this->isAble('store', null);
+            $this->isAble('store', Ticket::class);
 
-            //TODO: create ticket
+            return new TicketResource(Ticket::create($request->mappedAttributes()));
 
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('User not found', [
-                'error' => 'The specified user id does not exist.'
-            ], 404);
+        } catch (AuthorizationException $exception) {
+            return $this->error('You are not authorized to update the ticket', [], 401);
         }
-
-        return new TicketResource($request->mappedAttributes());
     }
 
     /**
