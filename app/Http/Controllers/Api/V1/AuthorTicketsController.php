@@ -25,13 +25,31 @@ class AuthorTicketsController extends ApiController
         $this->_ticketService = $ticketService;
     }
 
+    /**
+     * Get All Tickets
+     *
+     * Retrieve a paginated list of all tickets for a specific author.
+     *
+     * @group Author Tickets
+     *
+     * @param int $author_id
+     * @param TicketFilter $filters
+     * @return AnonymousResourceCollection
+     */
     public function index(int $author_id, TicketFilter $filters): AnonymousResourceCollection
     {
         return TicketResource::collection(Ticket::where('user_id', $author_id)->filter($filters)->paginate());
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create Ticket
+     *
+     * Create a new ticket with the provided details for a specific author.
+     *
+     * @group Tickets
+     *
+     * @param StoreTicketRequest $request
+     * @return TicketResource
      * @throws NotAuthorizedToEditException
      */
     public function store(StoreTicketRequest $request): TicketResource
@@ -45,9 +63,18 @@ class AuthorTicketsController extends ApiController
     }
 
     /**
-     * Update the specified resource in storage.
-     * @throws TicketNotFoundException
+     * Path Ticket
+     *
+     * Update specific fields from an existing ticket for a specific author.
+     *
+     * @group Author Tickets
+     *
+     * @param UpdateTicketRequest $request
+     * @param int $author_id
+     * @param int $ticket_id
+     * @return TicketResource
      * @throws NotAuthorizedToEditException
+     * @throws TicketNotFoundException
      */
     public function update(UpdateTicketRequest $request, int $author_id, int $ticket_id): TicketResource
     {
@@ -65,7 +92,18 @@ class AuthorTicketsController extends ApiController
     }
 
     /**
-     * @throws TicketNotFoundException|NotAuthorizedToEditException
+     * Update Ticket
+     *
+     * Update an existing ticket for a specific author.
+     *
+     * @group Author Tickets
+     *
+     * @param ReplaceTicketRequest $request
+     * @param int $author_id
+     * @param int $ticket_id
+     * @return TicketResource
+     * @throws NotAuthorizedToEditException
+     * @throws TicketNotFoundException
      */
     public function replace(ReplaceTicketRequest $request, int $author_id, int $ticket_id): TicketResource
     {
@@ -81,8 +119,17 @@ class AuthorTicketsController extends ApiController
     }
 
     /**
-     * Remove the specified resource from storage.
-     * @throws TicketNotFoundException|NotAuthorizedToEditException
+     * Delete Ticket
+     *
+     * Delete ticket for a specific author.
+     *
+     * @group Author Tickets
+     *
+     * @param int $author_id
+     * @param int $ticket_id
+     * @return JsonResponse
+     * @throws NotAuthorizedToEditException
+     * @throws TicketNotFoundException
      */
     public function destroy(int $author_id, int $ticket_id): JsonResponse
     {

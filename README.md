@@ -29,3 +29,5 @@
 - CRUD Operations (tickets, authors) - GET, POST, PUT, PATCH, DELETE
 - Global Exception Handling
 - Custom Exceptions for cleaner code
+- Scribe for API Documentation
+- Documentation on each endpoint (for scribe)

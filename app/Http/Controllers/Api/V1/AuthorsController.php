@@ -10,7 +10,14 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class AuthorsController extends ApiController
 {
     /**
-     * Display a listing of the resource.
+     * Get All Authors
+     *
+     * Retrieve a paginated list of all authors who have created tickets. Used in include parameter.
+     *
+     * @group Authors
+     *
+     * @param AuthorFilter $filters
+     * @return AnonymousResourceCollection
      */
     public function index(AuthorFilter $filters): AnonymousResourceCollection
     {
@@ -24,7 +31,14 @@ class AuthorsController extends ApiController
     }
 
     /**
-     * Display the specified resource.
+     * Display Author
+     *
+     * Retrieve the details of a specific author by their ID used in include parameter.
+     *
+     * @group Authors
+     *
+     * @param User $author
+     * @return UserResource
      */
     public function show(User $author): UserResource
     {

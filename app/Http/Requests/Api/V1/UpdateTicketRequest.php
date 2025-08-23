@@ -4,6 +4,7 @@ namespace App\Http\Requests\Api\V1;
 
 use App\Permissions\Abilities;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateTicketRequest extends BaseTicketRequest
 {
@@ -30,7 +31,7 @@ class UpdateTicketRequest extends BaseTicketRequest
         ];
 
         //providing granular permissions to update the ticket
-        if ($this->user()->tokenCan(Abilities::UpdateTicket)) {
+        if (Auth::user()->tokenCan(Abilities::UpdateTicket)) {
             $rules['data.relationships.author.data.id'] = 'sometimes|integer';
         }
 

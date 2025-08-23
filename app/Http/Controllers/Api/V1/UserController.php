@@ -18,7 +18,14 @@ class UserController extends ApiController
     protected string $policyClass = UserPolicy::class;
 
     /**
-     * Display a listing of the resource.
+     * Get All Users
+     *
+     * Retrieve a paginated list of all users.
+     *
+     * @group Users
+     *
+     * @param AuthorFilter $filters
+     * @return AnonymousResourceCollection
      */
     public function index(AuthorFilter $filters): AnonymousResourceCollection
     {
@@ -28,7 +35,14 @@ class UserController extends ApiController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create User
+     *
+     * Create a new user with the provided details.
+     *
+     * @group Users
+     *
+     * @param StoreUserRequest $request
+     * @return UserResource
      * @throws NotAuthorizedToEditException
      */
     public function store(StoreUserRequest $request): UserResource
@@ -40,7 +54,14 @@ class UserController extends ApiController
     }
 
     /**
-     * Display the specified resource.
+     * Display User
+     *
+     * Retrieve the details of a specific user by their ID.
+     *
+     * @group Users
+     *
+     * @param User $user
+     * @return UserResource
      */
     public function show(User $user): UserResource
     {
@@ -53,7 +74,15 @@ class UserController extends ApiController
 
 
     /**
-     * Update the specified resource in storage.
+     * Path User
+     *
+     * Update specific fields of an existing user.
+     *
+     * @group Users
+     *
+     * @param UpdateUserRequest $request
+     * @param User $user
+     * @return UserResource
      * @throws NotAuthorizedToEditException
      */
     public function update(UpdateUserRequest $request, User $user): UserResource
@@ -69,6 +98,15 @@ class UserController extends ApiController
     }
 
     /**
+     * Update User
+     *
+     * Replace an existing user with new details.
+     *
+     * @group Users
+     *
+     * @param ReplaceUserRequest $request
+     * @param User $user
+     * @return UserResource
      * @throws NotAuthorizedToEditException
      */
     public function replace(ReplaceUserRequest $request, User $user): UserResource
@@ -84,7 +122,14 @@ class UserController extends ApiController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete User
+     *
+     * Delete a specific user by their ID.
+     *
+     * @group Users
+     *
+     * @param User $user
+     * @return JsonResponse
      * @throws NotAuthorizedToEditException
      */
     public function destroy(User $user): JsonResponse

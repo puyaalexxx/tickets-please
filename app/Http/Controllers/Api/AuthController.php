@@ -16,6 +16,24 @@ class AuthController extends Controller
 {
     use ApiResponses;
 
+    /**
+     * Login
+     *
+     * Authenticate a user and return an API token.
+     *
+     * @response 200 {
+     *      "success": true,
+     *      "status": 200,
+     *      "data":
+     *          { "user data" },
+     *          "token": "{Your_Auth_Token}",
+     *      },
+     *      "message": "Authenticated"
+     * }
+     *
+     * @group Authentication
+     * @unauthenticated
+     */
     public function login(LoginUserRequest $request): JsonResponse
     {
         $request->validated($request->all());
@@ -39,6 +57,20 @@ class AuthController extends Controller
         );
     }
 
+    /**
+     * Logout
+     *
+     * Logout the authenticated user by revoking their API token.
+     *
+     * @response 200 {
+     *      "success": true,
+     *      "status": 200,
+     *      "data": [],
+     *      "message": "Logged out successfully"
+     * }
+     *
+     * @group Authentication
+     */
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
@@ -46,6 +78,15 @@ class AuthController extends Controller
         return $this->success([], 'Logged out successfully', 200);
     }
 
+    /**
+     * Register
+     *
+     * Register a new user.
+     *
+     * @group Tickets
+     *
+     * @return JsonResponse
+     */
     public function register(): JsonResponse
     {
         return $this->success(
