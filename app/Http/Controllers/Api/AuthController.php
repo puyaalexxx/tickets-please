@@ -21,20 +21,21 @@ class AuthController extends Controller
         $request->validated($request->all());
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            $this->error('Invalid credentials', 401);
+            $this->error('Invalid credentials', ['Email or Password not provided'], 401);
         }
 
         $user = User::firstWhere('email', $request->email);
 
-        return $this->ok(
-            'Authenticated',
+        return $this->success(
             [
                 'user' => $user,
                 'token' => $user->createToken('Api token for ' . $user->email,
                     Abilities::getAbilities($user),
                     now()->addMonth())
                     ->plainTextToken,
-            ]
+            ],
+            'Authenticated',
+            200
         );
     }
 
@@ -42,17 +43,18 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return $this->ok('Logged out successfully');
+        return $this->success([], 'Logged out successfully', 200);
     }
 
     public function register(): JsonResponse
     {
-        return $this->ok(
-            'Registration successful',
+        return $this->success(
             [
                 'user' => Auth::user(),
                 //'token' => Auth::user()->createToken('auth_token')->plainTextToken,
-            ]
+            ],
+            'Registration successful',
+            200
         );
     }
 }

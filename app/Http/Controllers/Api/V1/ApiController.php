@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\ApiResponses;
+use App\Exceptions\NotAuthorizedToEditException;
+use App\Exceptions\NotAuthorizedToEditTicketException;
+use App\Exceptions\NotAuthorizedToEditUserException;
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ApiController extends Controller
@@ -27,14 +30,23 @@ class ApiController extends Controller
         return in_array(strtolower($relationship), $includeValues);
     }
 
-    public function isAble(string $ability, $targetModel): bool
+    /**
+     * @throws NotAuthorizedToEditException
+     * @throws AuthorizationException
+     */
+    public function isAble(string $ability, $targetModel, $type = 'ticket'): bool
     {
         try {
-            $this->authorize($ability, [$targetModel, $this->policyClass]);
+            return (bool)$this->authorize($ability, [$targetModel, $this->policyClass]);
+        } catch (AuthorizationException $e) {
+            if ($type == 'ticket') {
+                throw new NotAuthorizedToEditTicketException('You are not authorized to ' . $ability . ' this ticket.');
+            } else if ($type == 'user') {
+                //only managers can edit, replace, update, delete a user
+                throw new NotAuthorizedToEditUserException('You are not authorized to ' . $ability . ' this user.');
+            }
 
-            return true;
-        } catch (AuthenticationException $e) {
-            return false;
+            throw $e;
         }
     }
 }

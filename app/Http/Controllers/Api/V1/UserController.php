@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Exceptions\NotAuthorizedToEditException;
 use App\Http\Filters\V1\AuthorFilter;
 use App\Http\Requests\Api\V1\ReplaceUserRequest;
 use App\Http\Requests\Api\V1\StoreUserRequest;
@@ -9,8 +10,6 @@ use App\Http\Requests\Api\V1\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Policies\V1\UserPolicy;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -30,18 +29,14 @@ class UserController extends ApiController
 
     /**
      * Store a newly created resource in storage.
+     * @throws NotAuthorizedToEditException
      */
-    public function store(StoreUserRequest $request): UserResource|JsonResponse
+    public function store(StoreUserRequest $request): UserResource
     {
-        try {
-            //policy
-            $this->isAble('store', User::class);
+        //policy
+        $this->isAble('store', User::class, 'user');
 
-            return new UserResource(User::create($request->mappedAttributes()));
-
-        } catch (AuthorizationException $exception) {
-            return $this->error('You are not authorized to create the user', [], 401);
-        }
+        return new UserResource(User::create($request->mappedAttributes()));
     }
 
     /**
@@ -59,70 +54,46 @@ class UserController extends ApiController
 
     /**
      * Update the specified resource in storage.
+     * @throws NotAuthorizedToEditException
      */
-    public function update(UpdateUserRequest $request, int $user_id): UserResource|JsonResponse
+    public function update(UpdateUserRequest $request, User $user): UserResource
     {
         //PATCH method to update the user
 
-        try {
-            $user = User::findOrFail($user_id);
+        //policy
+        $this->isAble('update', $user, 'user');
 
-            //policy
-            $this->isAble('update', $user);
+        $user->update($request->mappedAttributes());
 
-            $user->update($request->mappedAttributes());
-
-            return new UserResource($user);
-
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('User not found', [
-                'error' => 'The specified user id does not exist.'
-            ], 404);
-        } catch (AuthorizationException $exception) {
-            return $this->error('You are not authorized to update the user', [], 401);
-        }
+        return new UserResource($user);
     }
 
-    public function replace(ReplaceUserRequest $request, int $user_id): UserResource|JsonResponse
+    /**
+     * @throws NotAuthorizedToEditException
+     */
+    public function replace(ReplaceUserRequest $request, User $user): UserResource
     {
         //PUT method to replace the user
 
-        try {
-            $user = User::findOrFail($user_id);
+        //policy
+        $this->isAble('replace', $user, 'user');
 
-            //policy
-            $this->isAble('replace', $user);
+        $user->update($request->mappedAttributes());
 
-            $user->update($request->mappedAttributes());
-
-            return new UserResource($user);
-
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('User not found', [
-                'error' => 'The specified user id does not exist.'
-            ], 404);
-        }
+        return new UserResource($user);
     }
 
     /**
      * Remove the specified resource from storage.
+     * @throws NotAuthorizedToEditException
      */
-    public function destroy(int $user_id): JsonResponse
+    public function destroy(User $user): JsonResponse
     {
-        try {
-            $user = User::findOrFail($user_id);
+        //policy
+        $this->isAble('delete', $user, 'user');
 
-            //policy
-            $this->isAble('delete', $user);
+        $user->delete();
 
-            $user->delete();
-
-            return $this->ok('User deleted successfully.', $user);
-        } catch (ModelNotFoundException $exception) {
-
-            return $this->error('User not found', [
-                'error' => 'The specified user id does not exist.'
-            ], 404);
-        }
+        return $this->success($user, 'User deleted successfully.', 204);
     }
 }

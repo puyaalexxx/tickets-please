@@ -15,6 +15,7 @@ final class Abilities
 
     public const CreateOwnTicket = 'create:own:update';
     public const UpdateOwnTicket = 'ticket:own:update';
+    public const ReplaceOwnTicket = 'ticket:own:replace';
     public const DeleteOwnTicket = 'ticket:own:delete';
 
     public const CreateUser = 'user:create';
@@ -41,7 +42,7 @@ final class Abilities
                 self::CreateTicket,
                 self::CreateOwnTicket,
                 self::UpdateOwnTicket,
-                self::ReplaceTicket,
+                self::ReplaceOwnTicket,
                 self::DeleteOwnTicket
             ];
         }

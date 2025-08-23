@@ -4,34 +4,52 @@ declare(strict_types=1);
 
 namespace App;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 trait ApiResponses
 {
-    protected function success($message, $data, $statusCode = 200): JsonResponse
+    use AuthorizesRequests, ValidatesRequests;
+
+    /**
+     * Handle a successful response.
+     *
+     * @param mixed $data
+     * @param string $message
+     * @param int $code
+     * @return JsonResponse
+     */
+    protected function success(mixed $data, string $message, int $code = ResponseAlias::HTTP_OK): JsonResponse
     {
-        return response()->json([
+        $response = [
+            'success' => true,
+            'status' => $code,
             'data' => $data,
             'message' => $message,
-            'status' => $statusCode,
-        ], $statusCode);
+        ];
+
+        return response()->json($response, $code);
     }
 
-    protected function ok($message, $data = [], $statusCode = 200): JsonResponse
+    /**
+     * Handle an error response.
+     *
+     * @param string $errorMessage
+     * @param array $errors
+     * @param int $code
+     * @return JsonResponse
+     */
+    protected function error(string $errorMessage, array $errors = [], int $code = ResponseAlias::HTTP_BAD_REQUEST): JsonResponse
     {
-        return response()->json([
-            'data' => $data,
-            'message' => $message,
-            'status' => $statusCode,
-        ], $statusCode);
-    }
+        $response = [
+            'success' => false,
+            'status' => $code,
+            'message' => $errorMessage,
+            'errors' => $errors,
+        ];
 
-    protected function error($message, $data = [], $statusCode = 404): JsonResponse
-    {
-        return response()->json([
-            'data' => $data,
-            'message' => $message,
-            'status' => $statusCode,
-        ], $statusCode);
+        return response()->json($response, $code);
     }
 }

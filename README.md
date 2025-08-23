@@ -27,3 +27,5 @@
 - Custom Query Builder
 - Sorting (tickets, authors)
 - CRUD Operations (tickets, authors) - GET, POST, PUT, PATCH, DELETE
+- Global Exception Handling
+- Custom Exceptions for cleaner code
